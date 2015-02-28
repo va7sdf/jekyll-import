@@ -42,7 +42,7 @@ module JekyllImport
         # Reads a MySQL database via Sequel and creates a post file for each
         # post in wp_posts that has post_status = 'publish'. This restriction is
         # made because 'draft' posts are not guaranteed to have valid dates.
-        query = "SELECT `title`, `alias`, CONCAT(`introtext`,`fulltext`) as content, `created`, `id` FROM #{table_prefix}content WHERE (state = '0' OR state = '1') AND sectionid = '#{section}'"
+        query = "SELECT `title`, `alias`, CONCAT(`introtext`,`fulltext`) as content, `created`, `id`, `catid`, `sectionid` FROM #{table_prefix}content WHERE (state = '0' OR state = '1') AND sectionid = '#{section}'"
 
         db[query].each do |post|
           # Get required fields and construct Jekyll compatible name.
@@ -69,6 +69,8 @@ module JekyllImport
              'layout' => 'post',
              'title' => title.to_s,
              'joomla_id' => post[:id],
+             'joomla_category_id' => post[:catid],
+             'joomla_section_id' => post[:sectionid],
              'joomla_url' => post[:alias],
              'date' => date
            }.delete_if { |k,v| v.nil? || v == '' }.to_yaml
